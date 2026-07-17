@@ -23,14 +23,6 @@ export default defineConfig(({ mode }) => ({
     target: 'esnext',
     minify: 'esbuild',
     cssMinify: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-accordion', '@radix-ui/react-dialog', 'lucide-react', 'clsx', 'tailwind-merge'],
-        },
-      },
-    },
   },
   esbuild: {
     drop: mode === 'production' ? ['console', 'debugger'] : [],
