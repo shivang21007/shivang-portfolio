@@ -40,6 +40,8 @@ export interface GravityGridConfig {
   influenceRadius: number;
   gravityStrength: number;
   glowOpacity: number;
+  minStarInterval: number;
+  maxStarInterval: number;
 }
 
 export const experience: Experience[] = [
@@ -221,4 +223,6 @@ export const gravityGridConfig: GravityGridConfig = {
   influenceRadius: 800, // Radius of gravity influence (in pixels)
   gravityStrength: 40,  // Pull strength/weight (lower values make it lighter, default was 65)
   glowOpacity: 0.10,    // Mouse hover glow intensity/opacity (e.g. 0.07 = 7% opacity)
+  minStarInterval: 2,  // Minimum time between shooting stars (in seconds)
+  maxStarInterval: 6,  // Maximum time between shooting stars (in seconds, e.g. cap at 120s / 2 min)
 };

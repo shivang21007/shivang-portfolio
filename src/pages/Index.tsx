@@ -122,6 +122,21 @@ const GravityGrid: React.FC = () => {
     window.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseleave", handleMouseLeave);
 
+    interface ShootingStar {
+      x: number;
+      y: number;
+      dx: number;
+      dy: number;
+      length: number;
+      speed: number;
+      life: number;
+      maxLife: number;
+    }
+
+    let stars: ShootingStar[] = [];
+    let lastSpawnTime = Date.now();
+    let nextSpawnDelay = (gravityGridConfig.minStarInterval + Math.random() * (gravityGridConfig.maxStarInterval - gravityGridConfig.minStarInterval)) * 1000;
+
     const { gridGap: GRID_GAP, influenceRadius: INFLUENCE_RADIUS, gravityStrength: GRAVITY_STRENGTH } = gravityGridConfig;
 
     const draw = () => {
@@ -189,6 +204,72 @@ const GravityGrid: React.FC = () => {
         }
         ctx.stroke();
       }
+
+      // Spawning shooting stars at interval delays
+      const currentTime = Date.now();
+      if (currentTime - lastSpawnTime > nextSpawnDelay && stars.length < 3) {
+        const side = Math.random() > 0.5;
+        let spawnX, spawnY;
+        if (side) {
+          spawnX = Math.random() * width;
+          spawnY = -50;
+        } else {
+          spawnX = width + 50;
+          spawnY = Math.random() * (height * 0.6);
+        }
+        const speed = 5 + Math.random() * 6;
+        const angle = Math.PI * 0.75 + (Math.random() - 0.5) * 0.15; // Shoot down-left
+        const dx = Math.cos(angle) * speed;
+        const dy = Math.sin(angle) * speed;
+        const maxLife = 60 + Math.random() * 80;
+
+        stars.push({
+          x: spawnX,
+          y: spawnY,
+          dx,
+          dy,
+          length: 80 + Math.random() * 100,
+          speed,
+          life: maxLife,
+          maxLife,
+        });
+
+        lastSpawnTime = currentTime;
+        nextSpawnDelay = (gravityGridConfig.minStarInterval + Math.random() * (gravityGridConfig.maxStarInterval - gravityGridConfig.minStarInterval)) * 1000;
+      }
+
+      // Update and draw active shooting stars
+      stars = stars.filter((star) => {
+        star.x += star.dx;
+        star.y += star.dy;
+        star.life--;
+
+        if (star.life <= 0) return false;
+
+        const alpha = Math.sin((star.life / star.maxLife) * Math.PI) * 0.3; // Gentle fade curve
+        const trailX = star.x - (star.dx / star.speed) * star.length;
+        const trailY = star.y - (star.dy / star.speed) * star.length;
+
+        const grad = ctx.createLinearGradient(star.x, star.y, trailX, trailY);
+        grad.addColorStop(0, `rgba(34, 211, 238, ${alpha})`);
+        grad.addColorStop(0.2, `rgba(34, 211, 238, ${alpha * 0.5})`);
+        grad.addColorStop(1, "rgba(34, 211, 238, 0)");
+
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(star.x, star.y);
+        ctx.lineTo(trailX, trailY);
+        ctx.stroke();
+
+        // Star head
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 1.5})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        return true;
+      });
 
       animationFrameId = requestAnimationFrame(draw);
     };
