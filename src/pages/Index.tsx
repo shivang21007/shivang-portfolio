@@ -197,6 +197,16 @@ const Index: React.FC = () => {
   const certsRef = useFadeIn();
   const contactRef = useFadeIn();
 
+  const [mousePos, setMousePos] = useState({ x: -999, y: -999 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   const typedText = useTypingAnimation(
     ["DevOps Engineer", "Site Reliability Engineer", "Cloud Architect", "Infrastructure Builder"],
     80,
@@ -206,7 +216,13 @@ const Index: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       {/* Background */}
-      <div className="bg-grid-pattern" />
+      <div 
+        className="bg-grid-pattern" 
+        style={{
+          "--mouse-x": `${mousePos.x}px`,
+          "--mouse-y": `${mousePos.y}px`
+        } as React.CSSProperties}
+      />
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="ambient-orb ambient-orb-1" />
         <div className="ambient-orb ambient-orb-2" />
@@ -275,17 +291,19 @@ const Index: React.FC = () => {
         </div>
 
         {/* Pinned Scroll indicator at standard viewport bottom */}
-        <a
-          href="#about"
-          onClick={(e) => {
-            e.preventDefault();
-            document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
-          }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce z-20 cursor-pointer group"
-        >
-          <span className="text-sm font-semibold tracking-wider uppercase text-[var(--text-muted)] group-hover:text-[var(--accent-cyan)] transition-colors">scroll</span>
-          <ChevronDown className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--accent-cyan)] transition-colors" />
-        </a>
+        <div className="absolute bottom-12 left-0 right-0 flex justify-center z-20 pointer-events-none">
+          <a
+            href="#about"
+            onClick={(e) => {
+              e.preventDefault();
+              document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="flex flex-col items-center gap-2 animate-bounce cursor-pointer group pointer-events-auto"
+          >
+            <span className="text-sm font-semibold tracking-wider uppercase text-[var(--text-muted)] group-hover:text-[var(--accent-cyan)] transition-colors">scroll</span>
+            <ChevronDown className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--accent-cyan)] transition-colors" />
+          </a>
+        </div>
       </section>
 
       {/* ===== ABOUT ===== */}
