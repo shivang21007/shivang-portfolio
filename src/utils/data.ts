@@ -29,6 +29,7 @@ export interface Certification {
   issuer: string;
   icon: string;
   link: string;
+  credentialId?: string;
 }
 
 export const experience: Experience[] = [
@@ -39,21 +40,22 @@ export const experience: Experience[] = [
     period: "Sept 2024 — Present",
     current: true,
     achievements: [
-      "Orchestrated Kubernetes production workloads using rolling deployments, HPA, and ingress controllers — achieving 99.9% uptime for microservices.",
-      "Provisioned AWS infrastructure (EC2, S3, IAM, Route53) using Terraform, establishing IaC and reducing manual provisioning effort by 70%.",
-      "Engineered CI/CD pipelines via GitHub Actions and GitOps workflows, cutting deployment time by 50% with automated, zero-downtime releases.",
-      "Deployed centralized observability stack (Prometheus, Grafana, Loki, OpenTelemetry), reducing MTTR for production incidents by 40%.",
-      "Streamlined infrastructure workflows using Python and Bash scripts, saving 10+ hours of manual work weekly. Implemented encrypted MySQL backups for disaster recovery.",
-      "Integrated Trivy container scanning and compliance validations into pipelines, reducing security vulnerabilities by 80%.",
+      "Designed and implemented a GitOps-based CI/CD platform for a 55+ microservice Java Spring Boot gaming application, replacing a legacy manual Tomcat-based deployment workflow with GitLab CI, Docker, AWS ECR, Argo CD, and Kubernetes, cutting deployment time from 1-2 hours to under 20 minutes.",
+      "Automated end-to-end delivery on merges to main: building and scanning Docker images, publishing to ECR, updating Kubernetes manifests, and triggering Argo CD syncs, eliminating manual packaging and deployment steps.",
+      "Containerized Spring Boot services and deployed workloads on an on-premises kubeadm cluster using rolling updates, liveness/readiness probes, ingress routing, resource limits, and autoscaling for reliable, zero-downtime releases.",
+      "Hardened the delivery pipeline with SAST, SCA, secret detection, Dockerfile linting, and Trivy image scanning as OWASP Top 10-aligned quality gates, and centralized application secret management across environments.",
+      "Provisioned AWS infrastructure across EC2, S3, IAM, and Route53 using reusable Terraform modules with remote state (S3 backend + DynamoDB locking), reducing manual provisioning and configuration effort by 70%.",
+      "Built centralized observability with Prometheus, Alertmanager, Grafana, Loki, and OpenTelemetry across Kubernetes and application workloads, reducing MTTR by 40% through unified metrics, logs, traces, and alerting.",
+      "Collaborated with backend engineers to modernize deployment workflows for a distributed platform built on WebSockets, RabbitMQ, MongoDB, Redis, and ZooKeeper, improving release reliability and developer productivity."
     ],
   },
 ];
 
 export const projects: Project[] = [
   {
-    title: "SkillPulse",
+    title: "SkillPulse -- Production Kubernetes Platform",
     description:
-      "Production-grade 3-tier app (HTML/CSS/JS, Golang/Gin, MySQL) on Kubernetes with fully automated CI/CD via GitHub Actions. Multi-stage Docker builds reduced frontend image from 92MB → 20MB, backend from 34MB → 12MB. Integrated security scanners (golangci-lint, Gitleaks, Trivy, Hadolint) as automated CI gates.",
+      "Built and deployed a live production 3-tier application (HTML/CSS/JS, Golang/Gin, MySQL) on Kubernetes, delivered end-to-end through a fully automated GitHub Actions source-to-production pipeline. Optimized Docker builds using multi-stage images and scratch runtime images, reducing frontend image size from 92MB to 20MB and backend image size from 34MB to 12MB. Implemented rolling deployments, HPA autoscaling, service exposure, and security gates with golangci-lint, Gitleaks, govulncheck, Hadolint, and Trivy.",
     tech: ["Kubernetes", "Golang", "MySQL", "GitHub Actions", "Docker", "HPA"],
     type: "DevOps / CI-CD",
     featured: true,
@@ -61,9 +63,9 @@ export const projects: Project[] = [
     liveUrl: "https://devops.shivanggupta.in:8443/",
   },
   {
-    title: "2-Tier CI/CD Pipeline",
+    title: "Automated DevSecOps Pipeline",
     description:
-      "End-to-end CI/CD pipeline for a React/Node.js app — automating build, scan, and deployment to VPS via Docker Compose using GitHub Actions. Embedded SAST (Snyk), dependency scanning, secret detection, and Trivy scanning. Remediated 19 High and 2 Critical vulnerabilities before production.",
+      "Built an end-to-end GitHub Actions pipeline for a React/Node.js application, automating build, scanning, image publishing, and VPS deployment via Docker Compose for hands-off releases. Embedded SAST, dependency scanning, secret detection, Dockerfile linting, and Trivy gates, remediating 19 High and 2 Critical vulnerabilities by hardening base images and dependencies.",
     tech: ["React", "Node.js", "Docker Compose", "GitHub Actions", "Snyk", "Trivy"],
     type: "DevOps / Security",
     featured: true,
@@ -80,14 +82,6 @@ export const projects: Project[] = [
     stars: 247,
   },
   {
-    title: "ScanX",
-    description:
-      "Cross-platform system monitoring daemon that collects CPU, memory, disk, and network metrics with configurable alerting thresholds.",
-    tech: ["TypeScript", "System Monitoring", "CLI"],
-    type: "Infrastructure",
-    githubUrl: "https://github.com/shivang21007/ScanX",
-  },
-  {
     title: "Self-DNS",
     description:
       "A custom DNS server built from scratch in Go, handling DNS query resolution with support for multiple record types.",
@@ -96,12 +90,12 @@ export const projects: Project[] = [
     githubUrl: "https://github.com/shivang21007/Self-DNS",
   },
   {
-    title: "TapeX",
+    title: "ScanX",
     description:
-      "LTO9 Tape Library management system for enterprise backup workflows with automated tape rotation and cataloging.",
-    tech: ["TypeScript", "Storage", "Enterprise"],
-    type: "Storage Ops",
-    githubUrl: "https://github.com/shivang21007/TapeX",
+      "Cross-platform system monitoring daemon that collects CPU, memory, disk, and network metrics with configurable alerting thresholds.",
+    tech: ["TypeScript", "System Monitoring", "CLI"],
+    type: "Infrastructure",
+    githubUrl: "https://github.com/shivang21007/ScanX",
   },
 ];
 
@@ -109,65 +103,69 @@ export const skills: SkillCategory[] = [
   {
     category: "Orchestration & Containers",
     icon: "🐳",
-    items: ["Kubernetes", "Docker", "Docker Compose", "ArgoCD", "Helm"],
+    items: ["Kubernetes", "kubeadm", "Docker", "Helm", "Argo CD"],
   },
   {
     category: "Cloud & IaC",
     icon: "☁️",
-    items: ["AWS", "Terraform", "EC2", "S3", "IAM", "Route53"],
+    items: ["AWS (EC2, IAM, VPC, S3, Route53, ECR, CloudWatch, ALB)", "Terraform", "Docker Compose"],
   },
   {
     category: "CI/CD & GitOps",
     icon: "🔄",
-    items: ["GitHub Actions", "GitOps", "Rolling Deployments", "Zero-Downtime Releases"],
+    items: ["GitLab CI", "GitHub Actions", "Jenkins", "GitOps"],
   },
   {
     category: "Observability",
     icon: "📊",
-    items: ["Prometheus", "Grafana", "Loki", "OpenTelemetry", "Trivy"],
+    items: ["Prometheus", "Alertmanager", "Grafana", "Loki", "OpenTelemetry"],
   },
   {
-    category: "Languages & Scripting",
-    icon: "⌨️",
-    items: ["Golang", "Python", "Bash", "TypeScript", "JavaScript"],
+    category: "DevSecOps & Scripting",
+    icon: "🛡️",
+    items: ["SAST", "SCA", "Trivy", "Snyk", "Gitleaks", "Hadolint", "Vault", "OWASP", "Python", "Bash", "Go", "Git"],
   },
   {
-    category: "Databases & Systems",
+    category: "Data & Messaging",
     icon: "🗄️",
-    items: ["MySQL", "Redis", "Linux", "Distributed Systems"],
+    items: ["MySQL", "MongoDB", "Redis", "RabbitMQ", "ZooKeeper"],
   },
 ];
 
 export const certifications: Certification[] = [
   {
-    title: "AWS Certified Cloud Practitioner",
-    issuer: "Amazon Web Services",
-    icon: "☁️",
-    link: "https://drive.google.com/file/d/1XcYqt_urzZP_FtRNoWHOjWTHc1xn9WD1/view?usp=sharing",
+    title: "Certified DevOps Engineer Associate",
+    issuer: "TrainWithShubham",
+    icon: "🚀",
+    link: "https://credentials.certdirectory.io/verify/CRD-8FFHEZGG",
+    credentialId: "CRD-8FFHEZGG",
   },
   {
-    title: "Google Cloud Digital Leader",
-    issuer: "Google Cloud",
-    icon: "🌐",
-    link: "https://drive.google.com/file/d/13Sf3IXjTkbYvjDhqdfduJULJ_sj3wW0T/view?usp=sharing",
+    title: "Docker: Containerization for Modern Development",
+    issuer: "Codedamn",
+    icon: "🐳",
+    link: "#",
+    credentialId: "f688538056b4aa24ccf54f6a7c30aecc3f73d97c",
   },
   {
-    title: "IBM Data Science Certificates",
-    issuer: "IBM",
-    icon: "📊",
-    link: "https://drive.google.com/file/d/1hquSA8G04vL5g-JOTGEENo38JnO46iiX/view?usp=sharing",
+    title: "Solutions Architecture Job Simulation",
+    issuer: "AWS / Forage",
+    icon: "🏗️",
+    link: "#",
+    credentialId: "kqBDR2y88n8rqoJAw",
   },
   {
-    title: "Certificate of Publication",
-    issuer: "Research Journal",
-    icon: "📝",
-    link: "https://drive.google.com/file/d/1vXMzfvVXiWWmjUe5J-OQsPIxOijPTLes/view?usp=sharing",
+    title: "AWS Beginner to Intermediate: EC2, IAM, ELB, ASG, Route 53",
+    issuer: "Udemy / YouAccel",
+    icon: "🛡️",
+    link: "#",
+    credentialId: "UC-0b18ee44-4e51-41de-b31a-e75fb3fcd941",
   },
   {
-    title: "Sky Scanner Virtual Internship",
-    issuer: "Skyscanner",
-    icon: "✈️",
-    link: "https://drive.google.com/file/d/1jl16BD6h-DCXkTPntC3vlBpOD3K0lZiv/view?usp=sharing",
+    title: "Tech-A-Thon 3.0 Hackathon Participation",
+    issuer: "iNeuron",
+    icon: "🏆",
+    link: "#",
   },
 ];
 
@@ -178,13 +176,12 @@ export const personalInfo = {
   location: "Delhi, India",
   email: "shivanggupta2611@gmail.com",
   phone: "+918081260068",
-  linkedin: "https://linkedin.com/in/shivang21007",
+  linkedin: "https://www.linkedin.com/in/shivang21007/",
   github: "https://github.com/shivang21007",
   website: "https://shivanggupta.in",
-  resumeUrl:
-    "https://drive.google.com/file/d/1jDse5RHdQBAk1xwEfrdytt8Yt_HSYAcO/view?usp=sharing",
+  resumeUrl: "https://drive.google.com/file/d/1vQcmlgQJ312IfzrEaYplXM-NKl_kX9Pk/view?usp=sharing",
   summary:
-    "DevOps & Site Reliability Engineer with hands-on experience in Kubernetes, Terraform, CI/CD, and AWS. Proven track record in building scalable cloud-native infrastructure, optimizing costs, and automating workflows to ensure highly reliable production systems.",
+    "DevOps Engineer with hands-on experience building GitOps-based CI/CD platforms, Kubernetes infrastructure, and cloud automation for distributed systems. Experienced in AWS, Terraform, observability, and DevSecOps, with a focus on reliable software delivery and production platform engineering.",
   education: {
     degree: "B.Tech in Computer Science and Engineering",
     institution: "G.L. Bajaj Institute of Technology and Management, Greater Noida",
@@ -192,7 +189,7 @@ export const personalInfo = {
   },
   stats: [
     { label: "Uptime Achieved", value: "99.9%" },
-    { label: "Faster Deploys", value: "50%" },
+    { label: "Faster Deploys", value: "80%" },
     { label: "Less Manual Work", value: "70%" },
     { label: "Fewer Vulnerabilities", value: "80%" },
   ],

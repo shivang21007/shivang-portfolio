@@ -563,28 +563,52 @@ const Index: React.FC = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {certifications.map((cert, i) => (
-              <a
-                key={cert.title}
-                href={cert.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-card group p-6 text-center fade-in-up glow-cyan-hover block"
-                style={{ transitionDelay: `${i * 80}ms` }}
-              >
-                <div className="w-14 h-14 rounded-xl bg-[var(--accent-cyan-dim)] flex items-center justify-center text-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  {cert.icon}
+            {certifications.map((cert, i) => {
+              const isClickable = cert.link && cert.link !== "#";
+              const CardContent = (
+                <>
+                  <div className="w-14 h-14 rounded-xl bg-[var(--accent-cyan-dim)] flex items-center justify-center text-2xl mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    {cert.icon}
+                  </div>
+                  <h3 className="text-sm font-display font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent-cyan)] transition-colors">
+                    {cert.title}
+                  </h3>
+                  <p className="text-xs text-[var(--text-muted)]">{cert.issuer}</p>
+                  {cert.credentialId && (
+                    <p className="text-[10px] text-[var(--text-faint)] mt-1 font-mono break-all">
+                      ID: {cert.credentialId}
+                    </p>
+                  )}
+                  {isClickable && (
+                    <div className="mt-4 inline-flex items-center gap-1 text-xs text-[var(--accent-cyan)] opacity-0 group-hover:opacity-100 transition-opacity">
+                      View Certificate
+                      <ArrowUpRight className="w-3 h-3" />
+                    </div>
+                  )}
+                </>
+              );
+
+              return isClickable ? (
+                <a
+                  key={cert.title}
+                  href={cert.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-card group p-6 text-center fade-in-up glow-cyan-hover block cursor-pointer"
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  {CardContent}
+                </a>
+              ) : (
+                <div
+                  key={cert.title}
+                  className="glass-card-static group p-6 text-center fade-in-up block hover:border-[var(--glass-border-hover)] transition-all duration-350"
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  {CardContent}
                 </div>
-                <h3 className="text-sm font-display font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent-cyan)] transition-colors">
-                  {cert.title}
-                </h3>
-                <p className="text-xs text-[var(--text-muted)]">{cert.issuer}</p>
-                <div className="mt-4 inline-flex items-center gap-1 text-xs text-[var(--accent-cyan)] opacity-0 group-hover:opacity-100 transition-opacity">
-                  View Certificate
-                  <ArrowUpRight className="w-3 h-3" />
-                </div>
-              </a>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
