@@ -18,6 +18,7 @@ import {
   skills,
   certifications,
   personalInfo,
+  gravityGridConfig,
 } from "../utils/data";
 
 /* ===== Scroll-triggered fade-in hook ===== */
@@ -80,6 +81,135 @@ function useTypingAnimation(words: string[], speed = 100, pause = 2000) {
 
   return text;
 }
+
+/* ===== GRAVITY BENDING SPACETIME GRID COMPONENT ===== */
+const GravityGrid: React.FC = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: -1000, y: -1000, active: false });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let dpr = window.devicePixelRatio || 1;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
+      mouseRef.current.active = true;
+    };
+
+    const handleMouseLeave = () => {
+      mouseRef.current.active = false;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseleave", handleMouseLeave);
+
+    const { gridGap: GRID_GAP, influenceRadius: INFLUENCE_RADIUS, gravityStrength: GRAVITY_STRENGTH } = gravityGridConfig;
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Gentle continuous drift animation matching original speed
+      const time = Date.now() * 0.0005;
+      const offsetX = (time * 12) % GRID_GAP;
+      const offsetY = (time * 8) % GRID_GAP;
+
+      const cols = Math.ceil(width / GRID_GAP) + 2;
+      const rows = Math.ceil(height / GRID_GAP) + 2;
+
+      const points: { x: number; y: number }[][] = [];
+
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
+      const active = mouseRef.current.active;
+
+      for (let r = 0; r < rows; r++) {
+        points[r] = [];
+        const origY = (r - 1) * GRID_GAP + offsetY;
+        for (let c = 0; c < cols; c++) {
+          const origX = (c - 1) * GRID_GAP + offsetX;
+
+          let targetX = origX;
+          let targetY = origY;
+
+          if (active) {
+            const dx = mx - origX;
+            const dy = my - origY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < INFLUENCE_RADIUS) {
+              // Bending towards the mouse to simulate gravity pull
+              const pull = Math.pow((INFLUENCE_RADIUS - dist) / INFLUENCE_RADIUS, 1.8) * GRAVITY_STRENGTH;
+              targetX = origX + (dx / (dist || 1)) * pull;
+              targetY = origY + (dy / (dist || 1)) * pull;
+            }
+          }
+
+          points[r][c] = { x: targetX, y: targetY };
+        }
+      }
+
+      ctx.strokeStyle = "rgba(34, 211, 238, 0.055)"; // Soft cyan lines matching the site theme
+      ctx.lineWidth = 1;
+
+      // Draw horizontal grid lines
+      for (let r = 0; r < rows; r++) {
+        ctx.beginPath();
+        ctx.moveTo(points[r][0].x, points[r][0].y);
+        for (let c = 1; c < cols; c++) {
+          ctx.lineTo(points[r][c].x, points[r][c].y);
+        }
+        ctx.stroke();
+      }
+
+      // Draw vertical grid lines
+      for (let c = 0; c < cols; c++) {
+        ctx.beginPath();
+        ctx.moveTo(points[0][c].x, points[0][c].y);
+        for (let r = 1; r < rows; r++) {
+          ctx.lineTo(points[r][c].x, points[r][c].y);
+        }
+        ctx.stroke();
+      }
+
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full z-0 pointer-events-none"
+    />
+  );
+};
 
 /* ===== NAV COMPONENT ===== */
 function Nav() {
@@ -216,11 +346,14 @@ const Index: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       {/* Background */}
+      <GravityGrid />
       <div 
         className="bg-grid-pattern" 
         style={{
           "--mouse-x": `${mousePos.x}px`,
-          "--mouse-y": `${mousePos.y}px`
+          "--mouse-y": `${mousePos.y}px`,
+          "--glow-radius": `${gravityGridConfig.influenceRadius}px`,
+          "--glow-opacity": `${gravityGridConfig.glowOpacity}`
         } as React.CSSProperties}
       />
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -591,7 +724,17 @@ const Index: React.FC = () => {
                   <h3 className="text-sm font-display font-bold text-[var(--text-primary)] mb-1 group-hover:text-[var(--accent-cyan)] transition-colors">
                     {cert.title}
                   </h3>
-                  <p className="text-xs text-[var(--text-muted)]">{cert.issuer}</p>
+                  <p className="text-xs text-[var(--text-muted)] font-semibold">{cert.issuer}</p>
+                  {cert.tutor && (
+                    <p className="text-[11px] text-[var(--text-muted)] opacity-85 mt-1.5">
+                      Instructor: <span className="text-[var(--text-primary)] font-medium">{cert.tutor}</span>
+                    </p>
+                  )}
+                  {cert.date && (
+                    <p className="text-[10px] text-[var(--text-faint)] mt-1">
+                      {cert.date}{cert.expiry ? ` • Expires ${cert.expiry}` : ""}
+                    </p>
+                  )}
                   {cert.credentialId && (
                     <p className="text-[10px] text-[var(--text-faint)] mt-1 font-mono break-all">
                       ID: {cert.credentialId}

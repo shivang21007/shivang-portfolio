@@ -30,6 +30,16 @@ export interface Certification {
   icon: string;
   link: string;
   credentialId?: string;
+  tutor?: string;
+  date?: string;
+  expiry?: string;
+}
+
+export interface GravityGridConfig {
+  gridGap: number;
+  influenceRadius: number;
+  gravityStrength: number;
+  glowOpacity: number;
 }
 
 export const experience: Experience[] = [
@@ -123,7 +133,7 @@ export const skills: SkillCategory[] = [
   {
     category: "DevSecOps & Scripting",
     icon: "🛡️",
-    items: ["SAST", "SCA", "Trivy", "Snyk", "Gitleaks", "Hadolint", "Vault", "OWASP", "Python", "Bash", "Go", "Git"],
+    items: ["SAST", "SCA", "Trivy", "Snyk", "Gitleaks", "Hadolint", "Vault", "OWASP", "Python", "Bash", "Git"],
   },
   {
     category: "Data & Messaging",
@@ -139,6 +149,9 @@ export const certifications: Certification[] = [
     icon: "🚀",
     link: "https://credentials.certdirectory.io/verify/CRD-8FFHEZGG",
     credentialId: "CRD-8FFHEZGG",
+    tutor: "Shubham Londhe",
+    date: "May 2026",
+    expiry: "May 2030",
   },
   {
     title: "Docker: Containerization for Modern Development",
@@ -146,6 +159,8 @@ export const certifications: Certification[] = [
     icon: "🐳",
     link: "#",
     credentialId: "f688538056b4aa24ccf54f6a7c30aecc3f73d97c",
+    tutor: "Piyush Garg",
+    date: "Oct 25, 2023",
   },
   {
     title: "Solutions Architecture Job Simulation",
@@ -153,6 +168,8 @@ export const certifications: Certification[] = [
     icon: "🏗️",
     link: "#",
     credentialId: "kqBDR2y88n8rqoJAw",
+    tutor: "Tom Brunskill (CEO)",
+    date: "Sept 28, 2023",
   },
   {
     title: "AWS Beginner to Intermediate: EC2, IAM, ELB, ASG, Route 53",
@@ -160,12 +177,16 @@ export const certifications: Certification[] = [
     icon: "🛡️",
     link: "#",
     credentialId: "UC-0b18ee44-4e51-41de-b31a-e75fb3fcd941",
+    tutor: "YouAccel Training",
+    date: "Aug 17, 2023",
   },
   {
     title: "Tech-A-Thon 3.0 Hackathon Participation",
     issuer: "iNeuron",
     icon: "🏆",
     link: "#",
+    tutor: "Sudhanshu Kumar & Krish Naik",
+    date: "Oct 2023",
   },
 ];
 
@@ -193,4 +214,11 @@ export const personalInfo = {
     { label: "Less Manual Work", value: "70%" },
     { label: "Fewer Vulnerabilities", value: "80%" },
   ],
+};
+
+export const gravityGridConfig: GravityGridConfig = {
+  gridGap: 55,          // Distance between grid lines (in pixels)
+  influenceRadius: 800, // Radius of gravity influence (in pixels)
+  gravityStrength: 40,  // Pull strength/weight (lower values make it lighter, default was 65)
+  glowOpacity: 0.10,    // Mouse hover glow intensity/opacity (e.g. 0.07 = 7% opacity)
 };
