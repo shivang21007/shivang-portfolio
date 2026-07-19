@@ -19,6 +19,7 @@ import {
   certifications,
   personalInfo,
   gravityGridConfig,
+  typingConfig,
 } from "../utils/data";
 
 /* ===== Scroll-triggered fade-in hook ===== */
@@ -56,27 +57,37 @@ function useTypingAnimation(words: string[], speed = 100, pause = 2000) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    if (!words || words.length === 0) return;
     const currentWord = words[wordIndex];
+    let timer: number;
 
-    const timeout = setTimeout(
-      () => {
-        if (!isDeleting) {
+    if (isDeleting) {
+      // Deleting phase
+      timer = window.setTimeout(() => {
+        setText((prev) => prev.slice(0, -1));
+      }, speed / 2);
+    } else {
+      // Typing phase
+      if (text === currentWord) {
+        // Finished typing the word, pause before starting deletion
+        timer = window.setTimeout(() => {
+          setIsDeleting(true);
+        }, pause);
+      } else {
+        // Type next character
+        timer = window.setTimeout(() => {
           setText(currentWord.slice(0, text.length + 1));
-          if (text.length + 1 === currentWord.length) {
-            setTimeout(() => setIsDeleting(true), pause);
-          }
-        } else {
-          setText(currentWord.slice(0, text.length - 1));
-          if (text.length === 0) {
-            setIsDeleting(false);
-            setWordIndex((prev) => (prev + 1) % words.length);
-          }
-        }
-      },
-      isDeleting ? speed / 2 : speed
-    );
+        }, speed);
+      }
+    }
 
-    return () => clearTimeout(timeout);
+    // Transition from deleting back to typing next word
+    if (isDeleting && text === "") {
+      setIsDeleting(false);
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }
+
+    return () => clearTimeout(timer);
   }, [text, isDeleting, wordIndex, words, speed, pause]);
 
   return text;
@@ -419,9 +430,9 @@ const Index: React.FC = () => {
   }, []);
 
   const typedText = useTypingAnimation(
-    ["DevOps Engineer", "Site Reliability Engineer", "Cloud Architect", "Infrastructure Builder"],
-    80,
-    2500
+    typingConfig.titles,
+    typingConfig.speed,
+    typingConfig.pause
   );
 
   return (

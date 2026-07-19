@@ -44,6 +44,12 @@ export interface GravityGridConfig {
   maxStarInterval: number;
 }
 
+export interface TypingConfig {
+  titles: string[];
+  speed: number;
+  pause: number;
+}
+
 export const experience: Experience[] = [
   {
     role: "DevOps Engineer",
@@ -225,4 +231,15 @@ export const gravityGridConfig: GravityGridConfig = {
   glowOpacity: 0.10,    // Mouse hover glow intensity/opacity (e.g. 0.07 = 7% opacity)
   minStarInterval: 2,  // Minimum time between shooting stars (in seconds)
   maxStarInterval: 6,  // Maximum time between shooting stars (in seconds, e.g. cap at 120s / 2 min)
+};
+
+export const typingConfig: TypingConfig = {
+  titles: [
+    "DevOps Engineer",
+    "Site Reliability Engineer",
+    "Cloud Architect",
+    "Infrastructure Builder"
+  ],
+  speed: 80,   // Delay between typing individual letters (in milliseconds)
+  pause: 2500, // Delay before beginning to delete/backspace the finished word (in milliseconds)
 };
